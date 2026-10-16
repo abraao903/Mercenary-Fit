@@ -1,2 +1,2 @@
 # Mercenary-Fit
-Academia não tão normal 
+Academia completamente normal
