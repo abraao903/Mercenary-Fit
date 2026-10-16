@@ -1,2 +1,2 @@
 # Mercenary-Fit
-Academia Redpill, Alpha, Gigachad
+Academia não tão normal 
