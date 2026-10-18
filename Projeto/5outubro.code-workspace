@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "../../../5outubro"
+		},
+		{
+			"path": "../../../../../Área de trabalho/2026-desenvolvimento-software-visual-segunda-master"
+		}
+	],
+	"settings": {
+		"csharp-dev-tools.solutionViewer.selectedWorkspaceSolutions": [
+			"Ecommerce/Ecommerce.sln"
+		]
+	}
+}
