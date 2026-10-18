@@ -33,7 +33,7 @@ Este repositório contém todo o código fonte e documentação do projeto **Mer
 Academia completamente normal
 tcherere tche tche
 <<<<<<< HEAD
-zaaaaaaaaaaaaaaaaaa
+zawarada
 <<<<<<< HEAD
 alkdflskdjfaljdflaksjddjlfjldjflsdjflsjlsdjflsdjflsdjfldjflkdsjflkdsjflksdjflsj fuck
 =======
