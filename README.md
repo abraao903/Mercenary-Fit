@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Mercenary Fit
 
 ## Identificação do Projeto
@@ -27,3 +28,14 @@
 
 ## Repositório
 Este repositório contém todo o código fonte e documentação do projeto **Mercenary Fit**, sendo utilizado como ambiente de desenvolvimento e entregável oficial para avaliação.
+=======
+# Mercenary-Fit
+Academia completamente normal
+tcherere tche tche
+<<<<<<< HEAD
+zaaaaaaaaaaaaaaaaaa
+<<<<<<< HEAD
+alkdflskdjfaljdflaksjddjlfjldjflsdjflsjlsdjflsdjflsdjfldjflkdsjflkdsjflksdjflsj fuck
+=======
+
+>>>>>>> e4deb11 (Teste de commit)
