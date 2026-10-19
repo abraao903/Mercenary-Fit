@@ -62,3 +62,16 @@ Atendendo ao requisito de ir além do cadastro básico, esta funcionalidade util
 ## Repositório
 
 Este repositório contém todo o código-fonte, scripts do banco de dados e documentação do projeto **Mercenary Fit**, servindo como ambiente oficial de desenvolvimento e entrega para avaliação acadêmica.
+
+## Uso de Inteligência Artificial
+
+Em conformidade com as diretrizes do projeto, a documentação e a estruturação inicial do sistema **Mercenary Fit** foram desenvolvidas com o auxílio de ferramentas de Inteligência Artificial.
+
+- **Ferramenta Utilizada:** Gemini (Google).
+- **Forma de Uso (Prompts e Ajustes):** 
+  - Utilização de prompts estruturados para definir os requisitos do sistema de academia (evitando e-commerce).
+  - Geração das descrições detalhadas para o CRUD completo da entidade `Aluno` e o relacionamento com as entidades `Plano`, `Instrutor` e `FichaDeTreino`.
+  - Elaboração da sintaxe em Markdown e organização das seções do documento.
+- **Revisões Realizadas pela Equipe:** 
+  - A equipe revisou criticamente todos os textos gerados, ajustando os nomes dos integrantes (`Marcos Paulo Martins de Andrade`, `João Pedro Rosul Wojcik`, `Abraao Lima Gomes`) e a turma correspondente.
+  - Validação das regras de negócio e das entidades para garantir que cumprem rigorosamente os critérios de avaliação propostos na disciplina.
