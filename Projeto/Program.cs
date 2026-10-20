@@ -1,2 +1,6 @@
-﻿Console.WriteLine("Teste do commit");
-Console.WriteLine("2");
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.MapGet("/", () => "Hello World!");
+
+app.Run();
