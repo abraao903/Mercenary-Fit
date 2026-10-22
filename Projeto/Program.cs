@@ -12,15 +12,6 @@ var app = builder.Build();
 
 app.MapGet("/", () => "Mercenary Fit API");
 
-app.MapPost("/api/plano/cadastro", ([FromBody]Plano plano,[FromServices] AppDbContext ctx) => 
-{
-
-    ctx.Planos.Add(plano);
-
-    ctx.SaveChanges();
-
-    return Results.Created("", plano);
-});
 
 app.MapGet("/api/plano/listar", ([FromServices] AppDbContext ctx) =>
 {
@@ -32,5 +23,28 @@ app.MapGet("/api/plano/listar", ([FromServices] AppDbContext ctx) =>
 
     return Results.Ok(ctx.Planos.ToList());
 });
+
+app.MapPost("/api/plano/cadastro", ([FromBody]Plano plano,[FromServices] AppDbContext ctx) => 
+{
+
+    ctx.Planos.Add(plano);
+
+    ctx.SaveChanges();
+
+    return Results.Created("", plano);
+});
+
+
+app.MapPost("/api/aluno/cadastro", ([FromBody]Aluno aluno,[FromServices] AppDbContext ctx) => 
+{
+
+    ctx.Alunos.Add(aluno);
+
+    ctx.SaveChanges();
+
+    return Results.Created("", aluno);
+});
+
+
 
 app.Run();

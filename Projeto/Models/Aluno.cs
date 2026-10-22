@@ -14,5 +14,5 @@ public class Aluno
 
     public int TotalHoras { get; set; }
 
-    public DateTime DataMatricula { get; set; }
+    public DateTime DataMatricula { get; set; } = DateTime.Now;
 }
