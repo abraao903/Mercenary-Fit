@@ -1,0 +1,15 @@
+###
+GET http://localhost:5101
+
+###
+GET http://localhost:5101/api/plano/listar
+
+###
+POST http://localhost:5101/api/plano/cadastro
+Content-Type: application/json
+
+{
+    "nome": "Plano Mensal",
+    "duracaodias": 30,
+    "preco": 99.99
+}
