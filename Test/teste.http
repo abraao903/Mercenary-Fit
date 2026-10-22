@@ -11,5 +11,5 @@ Content-Type: application/json
 {
     "nome": "Plano Mensal",
     "duracaodias": 30,
-    "preco": 99.99
+    "preco": 999.99
 }
