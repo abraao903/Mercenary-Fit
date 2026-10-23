@@ -56,5 +56,73 @@ app.MapPost("/api/aluno/cadastro", ([FromBody]Aluno aluno,[FromServices] AppDbCo
 });
 
 
+app.MapPost("/api/instrutor/cadastro", async (
+    [FromBody] Instrutor instrutor,
+    [FromServices] AppDbContext ctx) =>
+{
+    ctx.Instrutores.Add(instrutor);
+    await ctx.SaveChangesAsync();
+
+    return Results.Created(
+        $"/api/instrutor/{instrutor.Id}",
+        instrutor
+    );
+});
+
+
+app.MapGet("/api/instrutor/listar", async (
+    [FromServices] AppDbContext ctx) =>
+{
+    var instrutores = await ctx.Instrutores.ToListAsync();
+
+    return Results.Ok(instrutores);
+});
+
+
+app.MapGet("/api/instrutor/{id:int}", async (
+    int id,
+    [FromServices] AppDbContext ctx) =>
+{
+    var instrutor = await ctx.Instrutores.FindAsync(id);
+
+    if (instrutor is null)
+        return Results.NotFound("Instrutor não encontrado.");
+    
+    return Results.Ok(instrutor);
+});
+
+app.MapPut("/api/instrutor/{id:int}", async (
+    int id,
+    [FromBody] Instrutor dados,
+    [FromServices] AppDbContext ctx) =>
+{
+    var instrutor = await ctx.Instrutores.FindAsync(id);
+
+    if (instrutor is null)
+        return Results.NotFound("Instrutor não encontrado.");
+
+    instrutor.Nome = dados.Nome;
+    instrutor.Email = dados.Email;
+    instrutor.Especialidade = dados.Especialidade;
+
+    await ctx.SaveChangesAsync();
+
+    return Results.Ok(instrutor);
+});
+
+app.MapDelete("/api/instrutor/{id:int}", async (
+    int id,
+    [FromServices] AppDbContext ctx) =>
+{
+    var instrutor = await ctx.Instrutores.FindAsync(id);
+
+    if (instrutor is null)
+        return Results.NotFound("Instrutor não encontrado.");
+
+    ctx.Instrutores.Remove(instrutor);
+    await ctx.SaveChangesAsync();
+
+    return Results.NoContent();
+});
 
 app.Run();
