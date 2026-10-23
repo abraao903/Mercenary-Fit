@@ -26,6 +26,16 @@ app.MapGet("/api/plano/listar", ([FromServices] AppDbContext ctx) =>
 
 app.MapPost("/api/plano/cadastro", ([FromBody]Plano plano,[FromServices] AppDbContext ctx) => 
 {
+    // Verifica se é nulo, vazio ou so preenchido com espaços
+    if (string.IsNullOrWhiteSpace(plano.Nome))
+    {
+        return Results.BadRequest("O nome do plano é obrigatorio e não pode ser nulo");
+    }
+    if(plano.Preco <= 0)
+    {
+        return Results.BadRequest("O valor do plano não pode ser menor doque zero");
+    }
+
 
     ctx.Planos.Add(plano);
 
