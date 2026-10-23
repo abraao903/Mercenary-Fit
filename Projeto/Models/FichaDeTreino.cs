@@ -14,6 +14,10 @@ public class FichaDeTreino
 
     public string Descricao { get; set; } = string.Empty;
 
+    public string Observacoes { get; set; } = string.Empty;
+
+    public DateTime DataCriacao { get; set; } = DateTime.Now;
+
     // Relacionamento com Aluno
     [Required]
     public int AlunoId { get; set; }
@@ -27,4 +31,8 @@ public class FichaDeTreino
 
     [ForeignKey("InstrutorId")]
     public Instrutor? Instrutor { get; set; }
+
+    // Exercícios associados
+    public ICollection<Exercicio> Exercicios { get; set; } = new List<Exercicio>();
 }
+
