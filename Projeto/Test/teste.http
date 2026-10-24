@@ -1,7 +1,7 @@
-###
+### Padrão
 GET http://localhost:5101
 
-###
+### 
 GET http://localhost:5101/api/plano/listar
 
 ###
@@ -57,3 +57,40 @@ DELETE http://localhost:5101/api/instrutor/1
 
 ### Buscar instrutor excluído
 GET http://localhost:5101/api/instrutor/1
+
+
+
+### Listar alunos
+GET http://localhost:5101/api/aluno/listar
+
+### Buscar Aluno por id
+GET http://localhost:5101/api/aluno/1
+
+### Atualizar aluno
+PUT http://localhost:5101/api/aluno/1
+Content-Type: application/json
+
+{
+    "nome": "Abram Lincoln",
+    "idade": 30,
+    "total_horas": 10,
+    "planoId": 1
+}
+
+
+### Cadastro ficha de treino 
+POST http://localhost:5101/api/ficha/cadastro
+Content-Type: application/json
+
+{
+    "titulo": "Metodo ABC",
+    "descricao": "treino completo",
+    "alunoId": 1,
+    "instrutor": 1
+}
+
+### Listar fichas de treino
+GET http://localhost:5101/api/ficha/listar
+
+### Excluir Aluno
+DELETE http://localhost:5101/api/aluno/1
