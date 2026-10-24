@@ -59,7 +59,6 @@ DELETE http://localhost:5101/api/instrutor/1
 GET http://localhost:5101/api/instrutor/1
 
 
-
 ### Listar alunos
 GET http://localhost:5101/api/aluno/listar
 
@@ -86,7 +85,7 @@ Content-Type: application/json
     "titulo": "Metodo ABC",
     "descricao": "treino completo",
     "alunoId": 1,
-    "instrutorId": 1
+    "instrutorId": 2
 }
 
 ### Listar fichas de treino

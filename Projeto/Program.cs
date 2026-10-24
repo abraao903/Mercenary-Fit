@@ -2,11 +2,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projeto.Models;
 using Projeto.Data;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data source=mercenaryfit.db"));
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 var app = builder.Build();
 
@@ -47,12 +58,32 @@ app.MapPost("/api/plano/cadastro", ([FromBody]Plano plano,[FromServices] AppDbCo
 
 });
 
-// listar com plano da academia
+// listar com plano da academia/ metodo especial para 
+// não gerar erros de algo infinito
 app.MapGet("/api/aluno/listar", ([FromServices] AppDbContext ctx) =>
 {
-    var Alunos = ctx.Alunos.Include(a => a.Plano).ToList();
-    return Results.Ok(Alunos);
+    var alunos = ctx.Alunos
+        .Include(a => a.Plano)
+        .Select(a => new 
+        {
+            a.Id,
+            a.Nome,
+            a.Idade,
+            a.TotalHoras,
+            a.DataMatricula,
+            Plano = new 
+            {
+                a.Plano.Id,
+                a.Plano.Nome,
+                a.Plano.Preco,
+                a.Plano.DuracaoDias
+            }
+        })
+        .ToList();
+
+    return Results.Ok(alunos);
 });
+
 
 //CADASTRO DO ALUNO
 app.MapPost("/api/aluno/cadastro", ([FromBody]Aluno aluno,[FromServices] AppDbContext ctx) => 
@@ -173,12 +204,46 @@ app.MapPost("/api/ficha/cadastro", ([FromBody] FichaDeTreino ficha, [FromService
 
 });
 
+
+// Metodo de listar para excluir pontos nulos dentro do listar
+// e deixar mais compacto/ tudo certinho
+// Utiliza .Select para estruturar o JSON de resposta de forma limpa, 
+// removendo ciclos e campos nulos desnecessários.
 app.MapGet("/api/ficha/listar", ([FromServices] AppDbContext ctx) =>
 {
-    var fichas = ctx.FichaDeTreinos.Include(f => f.Aluno)
-    .ThenInclude(a => a!.Plano).Include(f => f.Instrutor).ToList();
+    var fichas = ctx.FichaDeTreinos
+        .Include(f => f.Aluno)
+            .ThenInclude(a => a!.Plano)
+        .Include(f => f.Instrutor)
+        .Select(f => new
+        {
+            f.Id,
+            f.Titulo,
+            f.Descricao,
+            Aluno = new
+            {
+                f.Aluno!.Id,
+                f.Aluno.Nome,
+                f.Aluno.Idade,
+                Plano = new
+                {
+                    f.Aluno.Plano.Id,
+                    f.Aluno.Plano.Nome,
+                    f.Aluno.Plano.Preco
+                }
+            },
+            Instrutor = new
+            {
+                f.Instrutor!.Id,
+                f.Instrutor.Nome,
+                f.Instrutor.Especialidade,
+                f.Instrutor.Email
+            }
+        })
+        .ToList();
 
     return Results.Ok(fichas);
 });
+
 
 app.Run();

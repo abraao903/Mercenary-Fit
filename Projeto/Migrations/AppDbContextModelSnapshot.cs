@@ -73,7 +73,7 @@ namespace Projeto.Migrations
 
                     b.HasIndex("InstrutorId");
 
-                    b.ToTable("FichaDeTreino");
+                    b.ToTable("FichaDeTreinos");
                 });
 
             modelBuilder.Entity("Projeto.Models.Instrutor", b =>
