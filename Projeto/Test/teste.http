@@ -86,7 +86,7 @@ Content-Type: application/json
     "titulo": "Metodo ABC",
     "descricao": "treino completo",
     "alunoId": 1,
-    "instrutor": 1
+    "instrutorId": 1
 }
 
 ### Listar fichas de treino

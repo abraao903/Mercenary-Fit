@@ -57,7 +57,7 @@ app.MapGet("/api/aluno/listar", ([FromServices] AppDbContext ctx) =>
 //CADASTRO DO ALUNO
 app.MapPost("/api/aluno/cadastro", ([FromBody]Aluno aluno,[FromServices] AppDbContext ctx) => 
 {
-    var planoExiste = ctx.Planos.Any(p => p.Id== aluno.Id );
+    var planoExiste = ctx.Planos.Any(p => p.Id== aluno.PlanoId );
     if (!planoExiste) return Results.BadRequest("O plano informado não existe");
 
     ctx.Alunos.Add(aluno);
