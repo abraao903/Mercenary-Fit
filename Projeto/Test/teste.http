@@ -1,0 +1,59 @@
+###
+GET http://localhost:5101
+
+###
+GET http://localhost:5101/api/plano/listar
+
+###
+POST http://localhost:5101/api/plano/cadastro
+Content-Type: application/json
+
+{
+    "nome": "Plano Mensal",
+    "duracaodias": 30,
+    "preco": 999.99
+
+}
+
+###
+POST  http://localhost:5101/api/aluno/cadastro
+Content-Type: application/json
+
+{
+    "nome": "Carlos Silva",
+    "idade": 22,
+    "total_Horas": 10,
+    "PlanoId": 1
+}
+
+### Cadastrar instrutor
+POST http://localhost:5101/api/instrutor/cadastro
+Content-Type: application/json
+
+{
+    "nome": "Mariana Costa",
+    "email": "mariana@mercenaryfit.com",
+    "especialidade": "Musculação"
+}
+
+### Listar instrutores
+GET http://localhost:5101/api/instrutor/listar
+
+### Buscar instrutor por ID
+GET http://localhost:5101/api/instrutor/1
+
+### Atualizar instrutor
+PUT http://localhost:5101/api/instrutor/1
+Content-Type: application/json
+
+{
+    "nome": "Mariana Costa",
+    "email": "mariana.costa@mercenaryfit.com",
+    "especialidade": "Treinamento funcional"
+}
+
+### Excluir instrutor
+DELETE http://localhost:5101/api/instrutor/1
+
+### Buscar instrutor excluído
+GET http://localhost:5101/api/instrutor/1

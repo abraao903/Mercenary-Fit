@@ -12,4 +12,5 @@ public class AppDbContext : DbContext
     }
     public DbSet<Plano> Planos => Set<Plano>();
     public DbSet<Aluno> Alunos => Set<Aluno>();
+    public DbSet<Instrutor> Instrutores => Set<Instrutor>();
 }

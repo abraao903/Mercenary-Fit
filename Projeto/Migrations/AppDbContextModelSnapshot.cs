@@ -46,6 +46,62 @@ namespace Projeto.Migrations
                     b.ToTable("Alunos");
                 });
 
+            modelBuilder.Entity("Projeto.Models.FichaDeTreino", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AlunoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("InstrutorId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AlunoId");
+
+                    b.HasIndex("InstrutorId");
+
+                    b.ToTable("FichaDeTreino");
+                });
+
+            modelBuilder.Entity("Projeto.Models.Instrutor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Especialidade")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Instrutores");
+                });
+
             modelBuilder.Entity("Projeto.Models.Plano", b =>
                 {
                     b.Property<int>("Id")
@@ -76,6 +132,30 @@ namespace Projeto.Migrations
                         .IsRequired();
 
                     b.Navigation("Plano");
+                });
+
+            modelBuilder.Entity("Projeto.Models.FichaDeTreino", b =>
+                {
+                    b.HasOne("Projeto.Models.Aluno", "Aluno")
+                        .WithMany()
+                        .HasForeignKey("AlunoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Projeto.Models.Instrutor", "Instrutor")
+                        .WithMany("FichasDeTreino")
+                        .HasForeignKey("InstrutorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Aluno");
+
+                    b.Navigation("Instrutor");
+                });
+
+            modelBuilder.Entity("Projeto.Models.Instrutor", b =>
+                {
+                    b.Navigation("FichasDeTreino");
                 });
 
             modelBuilder.Entity("Projeto.Models.Plano", b =>
