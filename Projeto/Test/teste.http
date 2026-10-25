@@ -1,10 +1,13 @@
 ### Padrão
 GET http://localhost:5101
 
-### 
+
+
+
+### LISTAGEM DOS PLANOS
 GET http://localhost:5101/api/plano/listar
 
-###
+### CADASTRO DOS PLANOS
 POST http://localhost:5101/api/plano/cadastro
 Content-Type: application/json
 
@@ -15,7 +18,13 @@ Content-Type: application/json
 
 }
 
-###
+
+
+
+### Listar alunos
+GET http://localhost:5101/api/aluno/listar
+
+### Cadastro de Alunos
 POST  http://localhost:5101/api/aluno/cadastro
 Content-Type: application/json
 
@@ -25,6 +34,23 @@ Content-Type: application/json
     "total_Horas": 10,
     "PlanoId": 1
 }
+
+### Buscar Aluno por id
+GET http://localhost:5101/api/aluno/1
+
+### Alterar aluno pelo Id
+PUT http://localhost:5101/api/aluno/1
+Content-Type: application/json
+
+{
+    "nome": "Abram Lincoln",
+    "idade": 30,
+    "total_horas": 10,
+    "planoId": 1
+}
+
+
+
 
 ### Cadastrar instrutor
 POST http://localhost:5101/api/instrutor/cadastro
@@ -59,22 +85,8 @@ DELETE http://localhost:5101/api/instrutor/1
 GET http://localhost:5101/api/instrutor/1
 
 
-### Listar alunos
-GET http://localhost:5101/api/aluno/listar
 
-### Buscar Aluno por id
-GET http://localhost:5101/api/aluno/1
 
-### Atualizar aluno
-PUT http://localhost:5101/api/aluno/1
-Content-Type: application/json
-
-{
-    "nome": "Abram Lincoln",
-    "idade": 30,
-    "total_horas": 10,
-    "planoId": 1
-}
 
 
 ### Cadastro ficha de treino 

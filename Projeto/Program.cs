@@ -151,6 +151,7 @@ app.MapGet("/api/instrutor/listar", async ([FromServices] AppDbContext ctx) =>
 });
 
 
+//PROCURAR INSTRUTOR PELO ID
 app.MapGet("/api/instrutor/{id:int}", async (int id, [FromServices] AppDbContext ctx) =>
 {
     var instrutor = await ctx.Instrutores.FindAsync(id);
@@ -159,6 +160,7 @@ app.MapGet("/api/instrutor/{id:int}", async (int id, [FromServices] AppDbContext
 
 });
 
+//Alterar instrutor pelo Id
 app.MapPut("/api/instrutor/{id:int}", async (int id, [FromBody] Instrutor dados, [FromServices] AppDbContext ctx) =>
 {
     var instrutor = await ctx.Instrutores.FindAsync(id);
@@ -174,6 +176,7 @@ app.MapPut("/api/instrutor/{id:int}", async (int id, [FromBody] Instrutor dados,
     
 });
 
+//Instrutor deletado
 app.MapDelete("/api/instrutor/{id:int}", async (
     int id,
     [FromServices] AppDbContext ctx) =>
