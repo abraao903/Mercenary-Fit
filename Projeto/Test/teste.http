@@ -29,9 +29,9 @@ POST  http://localhost:5101/api/aluno/cadastro
 Content-Type: application/json
 
 {
-    "nome": "Carlos Silva",
+    "nome": "Marcos Paulo",
     "idade": 22,
-    "total_Horas": 10,
+    "totalHoras": 10,
     "PlanoId": 1
 }
 
@@ -45,7 +45,7 @@ Content-Type: application/json
 {
     "nome": "Abram Lincoln",
     "idade": 30,
-    "total_horas": 10,
+    "totalHoras": 10,
     "planoId": 1
 }
 
@@ -66,7 +66,7 @@ Content-Type: application/json
 GET http://localhost:5101/api/instrutor/listar
 
 ### Buscar instrutor por ID
-GET http://localhost:5101/api/instrutor/1
+GET http://localhost:5101/api/instrutor/3
 
 ### Atualizar instrutor
 PUT http://localhost:5101/api/instrutor/1
@@ -79,10 +79,10 @@ Content-Type: application/json
 }
 
 ### Excluir instrutor
-DELETE http://localhost:5101/api/instrutor/1
+DELETE http://localhost:5101/api/instrutor/2
 
 ### Buscar instrutor excluído
-GET http://localhost:5101/api/instrutor/1
+GET http://localhost:5101/api/instrutor/2
 
 
 
