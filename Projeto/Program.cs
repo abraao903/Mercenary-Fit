@@ -4,44 +4,54 @@ using Projeto.Models;
 using Projeto.Data;
 using System.Text.Json.Serialization;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite("Data source=mercenaryfit.db"));
-
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
 
 builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
 {
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
+builder.Services.AddCors(Options =>
+{
+   Options.AddPolicy("AllowFrontend", policy =>
+   {
+      policy.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod(); 
+   }); 
+});
+
+
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 app.MapGet("/", () => "Mercenary Fit API");
 
 
 // API/PLANO/LISTAR = Contem a lista dos planos
-app.MapGet("/api/plano/listar", ([FromServices] AppDbContext ctx) =>
+app.MapGet("/api/plano/listar", async ([FromServices] AppDbContext ctx) =>
 {
-    // ve se tem algo cadastrado 
-    if(!ctx.Planos.Any())
-    {
+    var planos = await ctx.Planos.ToListAsync();
+    if (planos.Count == 0)
         return Results.NotFound("Nenhum plano cadastrado");
-    }
 
-    return Results.Ok(ctx.Planos.ToList());
+    return Results.Ok(planos);
 });
 
-app.MapPost("/api/plano/cadastro", ([FromBody]Plano plano,[FromServices] AppDbContext ctx) => 
+app.MapPost("/api/plano/cadastro", async ([FromBody]Plano? plano,[FromServices] AppDbContext ctx) => 
 {
-    // Verifica se é nulo, vazio ou so preenchido com espaços
+    if (plano is null)
+    {
+        return Results.BadRequest("Dados do plano são obrigatorios");
+    }
     if (string.IsNullOrWhiteSpace(plano.Nome))
     {
-        return Results.BadRequest("O nome do plano é obrigatorio e não pode ser nulo");
+        return Results.BadRequest("O Nome do plano é obrigatório");
     }
     if(plano.Preco <= 0)
     {
@@ -53,16 +63,15 @@ app.MapPost("/api/plano/cadastro", ([FromBody]Plano plano,[FromServices] AppDbCo
     }
 
     ctx.Planos.Add(plano);
-    ctx.SaveChanges();
+    await ctx.SaveChangesAsync();
     return Results.Created("", plano);
-
 });
 
 // listar com plano da academia/ metodo especial para 
 // não gerar erros de algo infinito
-app.MapGet("/api/aluno/listar", ([FromServices] AppDbContext ctx) =>
+app.MapGet("/api/aluno/listar", async ([FromServices] AppDbContext ctx) =>
 {
-    var alunos = ctx.Alunos
+    var alunos = await ctx.Alunos
         .Include(a => a.Plano)
         .Select(a => new 
         {
@@ -71,7 +80,8 @@ app.MapGet("/api/aluno/listar", ([FromServices] AppDbContext ctx) =>
             a.Idade,
             a.TotalHoras,
             a.DataMatricula,
-            Plano = new 
+            a.PlanoId,
+            Plano = a.Plano == null ? null : new
             {
                 a.Plano.Id,
                 a.Plano.Nome,
@@ -79,27 +89,41 @@ app.MapGet("/api/aluno/listar", ([FromServices] AppDbContext ctx) =>
                 a.Plano.DuracaoDias
             }
         })
-        .ToList();
+        .ToListAsync();
 
     return Results.Ok(alunos);
 });
 
 
 //CADASTRO DO ALUNO
-app.MapPost("/api/aluno/cadastro", ([FromBody]Aluno aluno,[FromServices] AppDbContext ctx) => 
+app.MapPost("/api/aluno/cadastro", async ([FromBody]Aluno? aluno,[FromServices] AppDbContext ctx) => 
 {
-    var planoExiste = ctx.Planos.Any(p => p.Id== aluno.PlanoId );
+    if (aluno is null)
+    {
+        return Results.BadRequest("Dados do aluno são obrigatórios");
+    }
+    if (string.IsNullOrWhiteSpace(aluno.Nome))
+    {
+        return Results.BadRequest("O nome do aluno é obrigatorio");
+    }
+    if (aluno.Idade <= 0)
+    {
+        return Results.BadRequest("A idade deve ser maior que zero");
+    }
+
+
+    var planoExiste = await ctx.Planos.AnyAsync(p => p.Id== aluno.PlanoId );
     if (!planoExiste) return Results.BadRequest("O plano informado não existe");
 
     ctx.Alunos.Add(aluno);
-    ctx.SaveChanges();
-    return Results.Created("", aluno);
+    await ctx.SaveChangesAsync();
+    return Results.Created($"/api/aluno/{aluno.Id}", aluno);
 });
 
 // Busca aluno por Id
-app.MapGet("/api/aluno/{id:int}", ([FromServices] AppDbContext ctx, int id ) =>
+app.MapGet("/api/aluno/{id:int}", async ([FromServices] AppDbContext ctx, int id ) =>
 {
-    var aluno = ctx.Alunos.Include(a => a.Plano).FirstOrDefault(a => a.Id == id);
+    var aluno = await ctx.Alunos.Include(a => a.Plano).FirstOrDefaultAsync(a => a.Id == id);
     if (aluno is null) return Results.NotFound("Aluno não encontrado.");
     return Results.Ok(aluno);
 
@@ -107,36 +131,60 @@ app.MapGet("/api/aluno/{id:int}", ([FromServices] AppDbContext ctx, int id ) =>
 
 
 //ATUALIZA ALUNO
-app.MapPut("/api/aluno/{id:int}", ([FromServices] AppDbContext ctx, int id, [FromBody] Aluno alunoAlterado ) =>
+app.MapPut("/api/aluno/{id:int}", async ([FromServices] AppDbContext ctx, int id, [FromBody] Aluno? alunoAlterado ) =>
 {
-    var aluno = ctx.Alunos.Find(id);
+    if(alunoAlterado is null)
+    {
+        return Results.BadRequest("Dados para atualizar são obrigatorios");
+    }
+
+    var aluno = await ctx.Alunos.FindAsync(id);
     if (aluno is null) return Results.NotFound("Aluno não encontrado");
+
+    if (string.IsNullOrWhiteSpace(alunoAlterado.Nome))
+    {
+        return Results.BadRequest("O nome do aluno é obrigatorio");
+    }
+
+    var planoExiste = await ctx.Planos.AnyAsync(p => p.Id == alunoAlterado.PlanoId);
+    if (!planoExiste)
+    {
+        return Results.BadRequest("O plano informado não existe");
+    }
 
     aluno.Nome = alunoAlterado.Nome;
     aluno.Idade = alunoAlterado.Idade;
     aluno.TotalHoras = alunoAlterado.TotalHoras;
     aluno.PlanoId = alunoAlterado.PlanoId;
     
-    ctx.SaveChanges();
+    await ctx.SaveChangesAsync();
     return Results.Ok(aluno);
 });
 
 //DELETA O ALUNO
-app.MapDelete("/api/aluno/{id:int}", ([FromServices] AppDbContext ctx, int id) => 
+app.MapDelete("/api/aluno/{id:int}", async ([FromServices] AppDbContext ctx, int id) => 
 {
-    var aluno = ctx.Alunos.Find(id);
+    var aluno = await ctx.Alunos.FindAsync(id);
     if (aluno is null) return Results.NotFound("Aluno desconhecido");
 
     ctx.Alunos.Remove(aluno);
-    ctx.SaveChanges();
+    await ctx.SaveChangesAsync();
     return Results.NoContent();
-
 });
 
 
 //CADASTRO DO INSTRUTOR
-app.MapPost("/api/instrutor/cadastro", async ([FromBody] Instrutor instrutor,[FromServices] AppDbContext ctx) =>
+app.MapPost("/api/instrutor/cadastro", async ([FromBody] Instrutor? instrutor,[FromServices] AppDbContext ctx) =>
 {
+    if(instrutor is null)
+    {
+        return Results.BadRequest("Dados do instrutor são obrigatorios");
+    }
+    if(string.IsNullOrWhiteSpace(instrutor.Nome) || string.IsNullOrWhiteSpace(instrutor.Email))
+    {
+        return Results.BadRequest("Nome ou email em falta");
+    }
+
     ctx.Instrutores.Add(instrutor);
     await ctx.SaveChangesAsync();
     return Results.Created($"/api/instrutor/{instrutor.Id}", instrutor);
@@ -161,8 +209,13 @@ app.MapGet("/api/instrutor/{id:int}", async (int id, [FromServices] AppDbContext
 });
 
 //Alterar instrutor pelo Id
-app.MapPut("/api/instrutor/{id:int}", async (int id, [FromBody] Instrutor dados, [FromServices] AppDbContext ctx) =>
+app.MapPut("/api/instrutor/{id:int}", async (int id, [FromBody] Instrutor? dados, [FromServices] AppDbContext ctx) =>
 {
+    if(dados is null)
+    {
+        return Results.BadRequest("Dados do instrutor são obrigatorios");
+    }
+    
     var instrutor = await ctx.Instrutores.FindAsync(id);
     if (instrutor is null)
         return Results.NotFound("Instrutor não encontrado.");
@@ -177,12 +230,9 @@ app.MapPut("/api/instrutor/{id:int}", async (int id, [FromBody] Instrutor dados,
 });
 
 //Instrutor deletado
-app.MapDelete("/api/instrutor/{id:int}", async (
-    int id,
-    [FromServices] AppDbContext ctx) =>
+app.MapDelete("/api/instrutor/{id:int}", async (int id, [FromServices] AppDbContext ctx) =>
 {
     var instrutor = await ctx.Instrutores.FindAsync(id);
-
     if (instrutor is null)
         return Results.NotFound("Instrutor não encontrado.");
 
@@ -194,15 +244,24 @@ app.MapDelete("/api/instrutor/{id:int}", async (
 
 
 //FICHA DE TREINO 
-app.MapPost("/api/ficha/cadastro", ([FromBody] FichaDeTreino ficha, [FromServices] AppDbContext ctx) =>
+app.MapPost("/api/ficha/cadastro", async ([FromBody] FichaDeTreino? ficha, [FromServices] AppDbContext ctx) =>
 {
-    var alunoExiste = ctx.Alunos.Any(a => a.Id == ficha.AlunoId);
-    var instrutorExiste = ctx.Instrutores.Any(i => i.Id == ficha.InstrutorId);
+    if(ficha is null)
+    {
+        return Results.BadRequest("Dados da ficha são obrigatorios");
+    }
+    if (string.IsNullOrWhiteSpace(ficha.Titulo))
+    {
+        return Results.BadRequest("O titulo da ficha é obrigatorio");
+    }
+
+    var alunoExiste = await ctx.Alunos.AnyAsync(a => a.Id == ficha.AlunoId);
+    var instrutorExiste = await ctx.Instrutores.AnyAsync(i => i.Id == ficha.InstrutorId);
 
     if (!alunoExiste || !instrutorExiste) return Results.BadRequest("Aluno ou instrutor não existe");
 
     ctx.FichaDeTreinos.Add(ficha);
-    ctx.SaveChanges();
+    await ctx.SaveChangesAsync();
     return Results.Created("", ficha);
 
 });
@@ -212,9 +271,9 @@ app.MapPost("/api/ficha/cadastro", ([FromBody] FichaDeTreino ficha, [FromService
 // e deixar mais compacto/ tudo certinho
 // Utiliza .Select para estruturar o JSON de resposta de forma limpa, 
 // removendo ciclos e campos nulos desnecessários.
-app.MapGet("/api/ficha/listar", ([FromServices] AppDbContext ctx) =>
+app.MapGet("/api/ficha/listar", async ([FromServices] AppDbContext ctx) =>
 {
-    var fichas = ctx.FichaDeTreinos
+    var fichas = await ctx.FichaDeTreinos
         .Include(f => f.Aluno)
             .ThenInclude(a => a!.Plano)
         .Include(f => f.Instrutor)
@@ -223,27 +282,29 @@ app.MapGet("/api/ficha/listar", ([FromServices] AppDbContext ctx) =>
             f.Id,
             f.Titulo,
             f.Descricao,
-            Aluno = new
+            f.AlunoId,
+            f.InstrutorId,
+            Aluno = f.Aluno == null ? null : new
             {
-                f.Aluno!.Id,
+                f.Aluno.Id,
                 f.Aluno.Nome,
                 f.Aluno.Idade,
-                Plano = new
+                Plano = f.Aluno.Plano == null ? null : new
                 {
                     f.Aluno.Plano.Id,
                     f.Aluno.Plano.Nome,
                     f.Aluno.Plano.Preco
                 }
             },
-            Instrutor = new
+            Instrutor = f.Instrutor == null ? null : new
             {
-                f.Instrutor!.Id,
+                f.Instrutor.Id,
                 f.Instrutor.Nome,
                 f.Instrutor.Especialidade,
                 f.Instrutor.Email
             }
         })
-        .ToList();
+        .ToListAsync();
 
     return Results.Ok(fichas);
 });

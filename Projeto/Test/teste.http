@@ -43,7 +43,7 @@ PUT http://localhost:5101/api/aluno/1
 Content-Type: application/json
 
 {
-    "nome": "Abram Lincoln",
+    "nome": "Abram Lin",
     "idade": 30,
     "totalHoras": 10,
     "planoId": 1
