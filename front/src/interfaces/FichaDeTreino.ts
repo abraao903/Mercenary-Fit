@@ -8,5 +8,5 @@ export interface FichaDeTreino{
     alunoId: number;
     InstrutorId: number;
     aluno?: Aluno | null;
-    Instrutor?: Instrutor | null;
+    instrutor?: Instrutor | null;
 }

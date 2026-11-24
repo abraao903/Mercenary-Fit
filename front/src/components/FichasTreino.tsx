@@ -183,7 +183,7 @@ function FichasTreino() {
               <td>{ficha.descricao}</td>
               <td>{ficha.aluno?.nome ?? `Aluno #${ficha.alunoId}`}</td>
               <td>{ficha.aluno?.plano?.nome ?? '-'}</td>
-              <td>{ficha.instrutor?.nome ?? `Instrutor #${ficha.instrutorId}`}</td>
+              <td>{ficha.instrutor?.nome ?? `Instrutor #${ficha.InstrutorId}`}</td>
             </tr>
           ))}
         </tbody>
